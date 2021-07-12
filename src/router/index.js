@@ -1,24 +1,23 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
+import Vue from 'vue'
+import VueRouter from 'vue-router'
 
-Vue.use(VueRouter);
+Vue.use(VueRouter)
 
 const routes = [
   {
-    path: "/",
-    name: "layout",
-    component: () => import("../../views/index.vue"),
-    // 上下文自动查找加载路由
-    children: ((r) => {
-      let routers = r.keys().map((key) => r(key).default);
-      return routers;
-    })(require.context("../components/", true, /router\.js$/)), // true  开启查找子目录
+    path: '/',
+    name: 'layout',
+    component: () => import('@/views/index.vue')
   },
-];
+  {
+    path: '/VantopUpload',
+    component: () => import('@/views/VantopUpload/index.vue')
+  }
+]
 
 const router = new VueRouter({
-  mode: "hash",
-  routes,
-});
+  mode: 'hash',
+  routes
+})
 
-export default router;
+export default router

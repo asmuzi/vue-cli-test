@@ -1,5 +1,4 @@
 import axios from 'axios'
-import Qs from 'qs'
 
 process.env.NODE_ENV === 'development' && localStorage.setItem('shopToken', '8566a500-6c33-4d47-b7da-a562f93fde6d1')
 
