@@ -6,6 +6,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
+    redirect: '/VantopUpload',
     name: 'layout',
     component: () => import('@/views/index.vue')
   },
