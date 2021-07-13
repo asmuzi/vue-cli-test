@@ -1,7 +1,6 @@
 <template>
   <div>
-    <!-- <el-button plain type="primary" size="small">上传文件</el-button> -->
-    <VantopUpload :list="list" @handleResponse="handleResponse"></VantopUpload>
+    <VantopUpload ref="VantopUpload"></VantopUpload>
   </div>
 </template>
 
@@ -10,16 +9,6 @@ import VantopUpload from './components/VantopUpload.vue'
 export default {
   components: {
     VantopUpload
-  },
-  data() {
-    return {
-      list: []
-    }
-  },
-  methods: {
-    handleResponse(fileList) {
-      console.log(fileList)
-    }
   }
 }
 </script>

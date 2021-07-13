@@ -1,93 +1,106 @@
 <template>
-  <div>
-    <div class="upload-file">
-      <el-upload
-        ref="upload"
-        multiple
-        action=""
-        :on-change="handleChange"
-        :on-remove="handleRemove"
-        :on-exceed="handleExceed"
-        :file-list="fileList"
-        :http-request="uploadFile"
-        :auto-upload="false"
-      >
-        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-        <el-button style="margin-left: 133px;" size="small" type="success" @click="submitUpload">上传到服务器 </el-button>
-        <div slot="tip" class="el-upload__tip">只能上传xlsx文件，且不超过100m</div>
-      </el-upload>
+  <el-upload
+    ref="VantopUpload"
+    action="#"
+    multiple
+    list-type="picture-card"
+    :limit="limit"
+    :auto-upload="false"
+    :accept="accept"
+    :show-file-list="true"
+    :file-list="fileList"
+    :on-change="onChange"
+    :before-upload="beforeUpload"
+    :http-request="httpRequest"
+    :before-remove="beforeRemove"
+    :on-remove="onRemove"
+    :on-success="onSuccess"
+    :on-exceed="onExceed"
+    v-bind="$attrs"
+    v-on="$listeners"
+    class="el-upload-wrapper"
+  >
+    <!-- <el-button slot="trigger" size="small" type="primary">选取文件</el-button> -->
+    <i slot="trigger" class="el-icon-plus"></i>
+    <div>
+      <el-button plain type="primary" size="small" @click="handleUpload">上传文件</el-button>
     </div>
-  </div>
+  </el-upload>
 </template>
-
 <script>
+// import { uploadFile } from '../utils/http'
 export default {
-  data() {
-    return {
-      fileData: new FormData(), // 文件上传数据（多文件合一）
-      fileList: [] // upload多文件数组
+  name: 'VantopUpload',
+  props: {
+    action: {
+      type: String,
+      default: 'https://jsonplaceholder.typicode.com/posts/'
     }
   },
-
+  data() {
+    return {
+      accept: 'JPG、JPEG、TIFF、RAW、BMP、GIF、PNG、MP4',
+      // accept: '.xls,.xlsx',
+      // accept: 'JPG、JPEG、TIFF、RAW、BMP、GIF、PNG、MP4、XLS、XLSX',
+      fileList: [],
+      limit: 1000,
+      formData: null
+    }
+  },
+  watch: {
+    fileList: {
+      handler(fileList) {
+        this.$emit('change', fileList)
+      }
+    }
+  },
   methods: {
-    // 上传文件
-    uploadFile(file) {
-      this.fileData.append('file', file.file) // append增加数据
+    handleUpload() {
+      this.$nextTick(() => {
+        this.$refs.VantopUpload.submit()
+      })
     },
-    // 上传到服务器
-    submitUpload() {
-      if (this.fileList.length === 0) {
-        this.$message({
-          message: '请先选择文件',
-          type: 'warning'
-        })
-      } else {
-        const isLt100M = this.fileList.every(file => file.size / 1024 / 1024 < 100)
-        if (!isLt100M) {
-          this.$message.error('请检查，上传文件大小不能超过100MB!')
-        } else {
-          this.$refs.upload.submit() // 提交调用uploadFile函数
-          this.fileData.append('uploadFileType', 11)
-          this.$http.post(process.env.VUE_APP_URL + '/t/file/upload', this.fileData).then(response => {
-            if (response.data.code === 0) {
-              this.$message({
-                message: '上传成功',
-                type: 'success'
-              })
-              // this.fileList = []
-            } else {
-              this.$message({
-                message: response.data.msg,
-                type: 'error'
-              })
+    httpRequest() {
+      this.fileList.forEach(file => {
+        // this.formData = new FormData()
+        // this.formData.append('file', file.raw, file.name)
+        // this.formData.append('tenantId', '1596870669278')
+        this.formData = new FormData()
+        this.formData.append('uploadFileType', 11)
+        this.formData.append('file', file.raw, file.name)
+        this.$http
+          .post(process.env.VUE_APP_URL + '/t/file/upload', this.formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
             }
           })
-        }
-      }
+          .then(res => {
+            console.log(res)
+            this.fileList.push({
+              url: process.env.VUE_APP_URL + '/txcloud/' + res.data.data.key
+            })
+          })
+        // uploadFile(this.formData)
+      })
     },
-
-    //移除
-    handleRemove(file, fileList) {
+    beforeUpload() {
+      return true
+    },
+    onChange(file, fileList) {
       this.fileList = fileList
-      // return this.$confirm(`确定移除 ${ file.name }？`);
     },
-
-    // 选取文件超过数量提示
-    handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 5 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    onExceed() {
+      this.$message.warning(`只能上传${this.limit}个文件`)
     },
-
-    //监控上传文件列表
-    handleChange(file, fileList) {
-      let existFile = fileList.slice(0, fileList.length - 1).find(f => f.name === file.name)
-      if (existFile) {
-        this.$message.error('当前文件已经存在!')
-        fileList.pop()
-      }
-      this.fileList = fileList
+    beforeRemove(file) {
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
+    onSuccess() {
+      //
+    },
+    onRemove() {
+      //
     }
   }
 }
 </script>
-
-<style lang="scss" scoped></style>

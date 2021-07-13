@@ -1,8 +1,8 @@
 <template>
-  <el-menu default-active="/" router class="el-menu">
-    <el-menu-item index="/">
+  <el-menu default-active="/VantopUpload" router class="el-menu">
+    <!-- <el-menu-item index="/">
       <span slot="title">首页</span>
-    </el-menu-item>
+    </el-menu-item> -->
     <el-menu-item index="/VantopUpload">
       <span slot="title">VantopUpload</span>
     </el-menu-item>
