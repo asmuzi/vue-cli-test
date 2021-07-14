@@ -1,7 +1,7 @@
 <template>
   <div class="vantop-upload">
     <el-upload
-      class="upload-demo"
+      class="el-upload"
       :action="action"
       :headers="headers"
       :file-list="fileList"
@@ -13,12 +13,21 @@
       :on-remove="remove"
       :list-type="listType"
       :show-file-list="showFileList"
+      :drag="drag"
       v-bind="$attrs"
       v-on="$listeners"
     >
       <slot>
-        <el-button size="small" type="primary">点击上传</el-button>
-        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+        <!-- <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div> -->
+        <div class="el-upload__text">
+          <div class="text-head">
+            <i class="el-icon-upload"></i>
+            <span>将文件拖到此处，或<em>点击上传</em></span>
+          </div>
+          <div class="text-footer">支持xlsx文件 ，文件不得大于2M，数据最多1000条</div>
+        </div>
       </slot>
     </el-upload>
   </div>
@@ -61,6 +70,10 @@ export default {
     autoUpload: {
       type: Boolean,
       default: true
+    },
+    drag: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -69,9 +82,7 @@ export default {
       fileList: []
     }
   },
-  computed: {
-
-  },
+  computed: {},
   watch: {
     value: {
       immediate: true,
@@ -127,7 +138,44 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// .vantop-upload {
-//
-// }
+.vantop-upload {
+  display: flex;
+  /deep/ .el-upload {
+    width: 100%;
+    text-align: left;
+    .el-upload__text {
+      width: 100%;
+      .text-head {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #374151;
+        font-size: 13px;
+        margin-bottom: 10px;
+        i {
+          line-height: inherit;
+          color: #4b5563;
+          font-size: 22px;
+          margin: 0;
+          margin-right: 10px;
+        }
+        span {
+          em {
+            margin-left: 8px;
+          }
+        }
+      }
+      .text-footer {
+        color: #9ca3af;
+        font-size: 12px;
+      }
+    }
+    .el-upload-dragger {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+  }
+}
 </style>

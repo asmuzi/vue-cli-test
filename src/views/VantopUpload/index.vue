@@ -1,18 +1,29 @@
 <template>
-  <div>
-    <!-- 导入 -->
-    <el-dialog v-if="options" :title="options.sceneName" :visible="false">
-      <div>一. 下载导入模板</div>
-      <div v-for="item in templateList" :key="item.id">
-        <el-link :underline="false" @click="download(item)">{{ item.fileName }}</el-link>
+  <div class="vantop-upload-wrapper">
+    <!-- 导入按钮 -->
+    <VantopUpload ref="VantopUpload" v-model="fileList" list-type="text" multiple>
+      <el-button size="small" plain><i class="el-icon-upload"></i>上传附件</el-button>
+    </VantopUpload>
+    <!-- 打开导入弹窗 -->
+    <el-button size="small" @click="handleVisible(true)">打开导入弹窗</el-button>
+    <!-- 导入弹窗 -->
+    <el-dialog :title="options.sceneName" :visible.sync="visible" width="600px" class="vantop-upload-dialog">
+      <div class="step-1">
+        <div class="head-title ">一. 下载导入模板</div>
+        <div v-for="item in templateList" :key="item.id">
+          <el-link :underline="false" @click="download(item)">{{ item.fileName }}</el-link>
+        </div>
       </div>
-      <div>二. 上传文件</div>
-      <div>{{ options.importRuleDesc }}</div>
-      <VantopUpload ref="VantopUpload" v-model="fileList" list-type="text" multiple></VantopUpload>
-      <el-button size="small" plain type="primary" @click="importFile">导入</el-button>
+      <div class="step-2">
+        <div class="head-title">二. 上传文件</div>
+        <div class="import-rule-desc">{{ options.importRuleDesc }}</div>
+      </div>
+      <VantopUpload ref="VantopUpload" v-model="fileList" list-type="text" multiple drag></VantopUpload>
+      <span slot="footer">
+        <el-button size="small" plain @click="handleVisible(false)">取消</el-button>
+        <el-button size="small" plain type="primary" @click="importFile" :disabled="fileList.length < 1">导入</el-button>
+      </span>
     </el-dialog>
-    <!-- 导出 -->
-    <div></div>
   </div>
 </template>
 
@@ -25,10 +36,15 @@ export default {
   },
   data() {
     return {
+      // 导入弹窗显示
+      visible: false,
       // 导入任务状态
       importResult: null,
       // 导入场景查询
-      options: null,
+      // options: null,
+      options: {
+        sceneName: ''
+      },
       // 导入模板列表
       templateList: [
         {
@@ -37,10 +53,20 @@ export default {
           url: 'http://nextop-import.oss-cn-shenzhen.aliyuncs.com/upload/1596870669278/20210713/1414886496561512449/备货计划初始化.xlsx'
         }
       ],
+      // fileList: [
+      //   {
+      //     name: 'food.jpeg',
+      //     url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+      //   },
+      //   {
+      //     name: 'food2.jpeg',
+      //     url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+      //   }
+      // ],
       fileList: [
         {
           fileId: 'upload/1596870669278/20210713/1414886496561512449/备货计划初始化.xlsx',
-          fileName: '备货计划初始化.xlsx',
+          name: '备货计划初始化.xlsx',
           url: 'http://nextop-import.oss-cn-shenzhen.aliyuncs.com/upload/1596870669278/20210713/1414886496561512449/备货计划初始化.xlsx'
         }
       ]
@@ -67,6 +93,9 @@ export default {
     this.importDetail()
   },
   methods: {
+    handleVisible(visible) {
+      this.visible = visible
+    },
     // 导入场景详情
     importDetail() {
       const queryData = {
@@ -115,4 +144,26 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.vantop-upload-wrapper {
+  .vantop-upload-dialog {
+    .step-1 {
+      margin-bottom: 24px;
+    }
+    .step-2 {
+      margin-bottom: 16px;
+      .import-rule-desc {
+        font-size: 13px;
+        font-weight: 400;
+        color: #6b7280;
+      }
+    }
+    .head-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+  }
+}
+</style>

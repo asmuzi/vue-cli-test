@@ -10,6 +10,17 @@ const instance = axios.create({
   }
 })
 
+// 添加响应拦截器
+instance.interceptors.response.use(
+  function(response) {
+    return response
+  },
+  function(error) {
+    console.log(error)
+    return Promise.reject(error)
+  }
+)
+
 const baseUrl = 'https://api.nextop.cc'
 const prefix = baseUrl + '/importExportPlatform'
 
