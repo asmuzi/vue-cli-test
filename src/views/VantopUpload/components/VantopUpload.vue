@@ -102,7 +102,7 @@ export default {
   },
   methods: {
     httpRequest() {
-      // console.log(this.fileList);
+      // console.log(this.fileList)
       this.fileList.map(file => {
         this.queryData = null
         this.queryData = new FormData()

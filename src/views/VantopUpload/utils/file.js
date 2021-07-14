@@ -1,5 +1,6 @@
 import axios from 'axios'
 
+import { Message } from 'element-ui'
 const instance = axios.create({
   headers: {
     timeout: 3000,
@@ -9,14 +10,20 @@ const instance = axios.create({
       'bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIwOThmNmJjZDQ2MjFkMzczY2FkZTRlODMyNjI3YjRmNiIsImlhdCI6MTYyNTcyNzk1OCwiYXVkIjoibmV4dG9waXVzZXIiLCJ1aWQiOiIxIiwidGVuYW50SWQiOiIxNTk2ODcwNjY5Mjc4IiwiZXhwIjoxNjI1ODE0MzU4LCJuYmYiOjE2MjU3Mjc5NTh9.27-4pCvlFpULzaRs--t9hV2C7aYmxcZWwMwqGuijcqc'
   }
 })
-
 // 添加响应拦截器
 instance.interceptors.response.use(
   function(response) {
+    // console.log(response)
+    const { code, msg } = response.data
+    if (code !== '000000') {
+      Message.error(msg)
+    }
     return response
   },
-  function(error) {
+  error => {
     console.log(error)
+    const { msg } = error
+    this.$message.error(msg)
     return Promise.reject(error)
   }
 )
@@ -36,6 +43,9 @@ export const exportFile = params =>
     .then(res => {
       downBuffer(res, params.filename)
     })
+
+// 导出数量统计
+export const exportCount = params => instance.post(prefix + '/export/count', params)
 
 // 通过 a 标签实现下载
 export const downloadFile = (url, filename) => {
